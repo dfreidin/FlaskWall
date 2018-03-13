@@ -36,7 +36,7 @@ CREATE TABLE `comments` (
   KEY `fk_comments_users1_idx` (`user_id`),
   CONSTRAINT `fk_comments_messages1` FOREIGN KEY (`message_id`) REFERENCES `messages` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_comments_users1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -45,7 +45,7 @@ CREATE TABLE `comments` (
 
 LOCK TABLES `comments` WRITE;
 /*!40000 ALTER TABLE `comments` DISABLE KEYS */;
-INSERT INTO `comments` VALUES (1,'This is a comment on the first message','2018-03-12 17:23:38','2018-03-12 17:23:38',1,1),(2,'This is a second comment','2018-03-12 17:23:45','2018-03-12 17:23:45',1,1),(3,'This is a comment on the second message','2018-03-12 17:28:07','2018-03-12 17:28:07',2,1),(4,'I\'m commenting as another user','2018-03-12 17:30:23','2018-03-12 17:30:23',2,2);
+INSERT INTO `comments` VALUES (2,'This is a second comment','2018-03-12 17:23:45','2018-03-12 17:23:45',1,1),(4,'I\'m commenting as another user','2018-03-12 17:30:23','2018-03-12 17:30:23',2,2),(5,'Comment that should be deleted with its parent message','2018-03-13 10:09:59','2018-03-13 10:09:59',8,1),(7,'Got pulled away, so these posts passed the 30 minute timer','2018-03-13 10:49:59','2018-03-13 10:49:59',8,1);
 /*!40000 ALTER TABLE `comments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -65,7 +65,7 @@ CREATE TABLE `messages` (
   PRIMARY KEY (`id`),
   KEY `fk_messages_users_idx` (`user_id`),
   CONSTRAINT `fk_messages_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -74,7 +74,7 @@ CREATE TABLE `messages` (
 
 LOCK TABLES `messages` WRITE;
 /*!40000 ALTER TABLE `messages` DISABLE KEYS */;
-INSERT INTO `messages` VALUES (1,'Hello, this is the first message ever!','2018-03-12 17:15:32','2018-03-12 17:15:32',1),(2,'Here is a second message','2018-03-12 17:23:55','2018-03-12 17:23:55',1),(3,'Now I\'m posting as another user','2018-03-12 17:30:13','2018-03-12 17:30:13',2);
+INSERT INTO `messages` VALUES (1,'Hello, this is the first message ever!','2018-03-12 17:15:32','2018-03-12 17:15:32',1),(2,'Here is a second message','2018-03-12 17:23:55','2018-03-12 17:23:55',1),(3,'Now I\'m posting as another user','2018-03-12 17:30:13','2018-03-12 17:30:13',2),(7,'Posting a message to wait for 30 minutes and see if the delete button is still there','2018-03-13 10:09:28','2018-03-13 10:09:28',1),(8,'Posting a message to test deleting all sub-comments','2018-03-13 10:09:44','2018-03-13 10:09:44',1);
 /*!40000 ALTER TABLE `messages` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -117,4 +117,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-03-12 17:47:55
+-- Dump completed on 2018-03-13 12:12:00

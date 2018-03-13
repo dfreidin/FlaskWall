@@ -80,17 +80,17 @@ def wall():
     query = "SELECT CONCAT(users.first_name, ' ', users.last_name) AS poster_name FROM users WHERE users.id = :user_id"
     query_data = {"user_id": session["user_id"]}
     username = mysql.query_db(query, query_data)
-    query = "SELECT messages.id AS message_id, CONCAT(users.first_name, ' ', users.last_name) AS poster_name, DATE_FORMAT(messages.created_at, '%b %D %Y') AS post_date, messages.message FROM users JOIN messages ON users.id = messages.user_id;"
+    query = "SELECT messages.id AS message_id, CONCAT(users.first_name, ' ', users.last_name) AS poster_name, DATE_FORMAT(messages.created_at, '%b %D %Y') AS post_date, messages.message, messages.user_id, TIMESTAMPDIFF(MINUTE, messages.created_at, NOW()) AS post_time FROM users JOIN messages ON users.id = messages.user_id;"
     messages = mysql.query_db(query)
     wall = []
     for i in range(len(messages)):
         wall.append({"message":messages[i]})
-        query = "SELECT CONCAT(users.first_name, ' ', users.last_name) AS poster_name, DATE_FORMAT(comments.created_at, '%b %D %Y') AS post_date, comments.comment FROM users JOIN comments ON users.id = comments.user_id JOIN messages ON comments.message_id = messages.id WHERE messages.id = :message_id;"
+        query = "SELECT comments.id AS comment_id, CONCAT(users.first_name, ' ', users.last_name) AS poster_name, DATE_FORMAT(comments.created_at, '%b %D %Y') AS post_date, comments.comment, comments.user_id, TIMESTAMPDIFF(MINUTE, comments.created_at, NOW()) AS post_time FROM users JOIN comments ON users.id = comments.user_id JOIN messages ON comments.message_id = messages.id WHERE messages.id = :message_id;"
         query_data = {"message_id": messages[i]["message_id"]}
         comments = mysql.query_db(query, query_data)
         wall[i]["comments"] = comments
     wall.reverse()
-    return render_template("wall.html", name=username[0]["poster_name"], posts=wall)
+    return render_template("wall.html", name=username[0]["poster_name"], posts=wall, user_id=session["user_id"])
 @app.route("/message", methods=["POST"])
 def message():
     if not session.get("user_id"):
@@ -110,6 +110,24 @@ def comment():
     message_id = request.form["message_id"]
     query = "INSERT INTO comments (comment, user_id, message_id, created_at, updated_at) VALUES(:comment, :user_id, :message_id, NOW(), NOW());"
     query_data = {"comment": content, "user_id": session["user_id"], "message_id": message_id}
+    mysql.query_db(query, query_data)
+    return redirect("/wall")
+@app.route("/delete_message/<message_id>")
+def delete_message(message_id):
+    # query = "DELETE m, c FROM messages m LEFT JOIN comments c ON c.message_id = m.id WHERE m.id = :message_id AND m.user_id = :user_id AND TIMESTAMPDIFF(MINUTE, m.created_at, NOW()) <= 30;"
+    query = "DELETE c FROM comments c JOIN messages m ON c.message_id = m.id WHERE m.id = :message_id AND m.user_id = :user_id AND TIMESTAMPDIFF(MINUTE, m.created_at, NOW()) <= 30;"
+    query_data = {"message_id": message_id, "user_id": session["user_id"]}
+    mysql.query_db(query, query_data)
+    query = "DELETE FROM messages WHERE id = :message_id AND user_id = :user_id AND TIMESTAMPDIFF(MINUTE, created_at, NOW()) <= 30;"
+    query_data = {"message_id": message_id, "user_id": session["user_id"]}
+    mysql.query_db(query, query_data)
+    return redirect("/wall")
+@app.route("/delete_comment/<comment_id>")
+def delete_comment(comment_id):
+    query = "DELETE FROM comments WHERE id = :comment_id AND user_id = :user_id AND TIMESTAMPDIFF(MINUTE, created_at, NOW()) <= 30;"
+    query_data = {"comment_id": comment_id, "user_id": session["user_id"]}
+    print query
+    print comment_id
     mysql.query_db(query, query_data)
     return redirect("/wall")
 app.run(debug=True)

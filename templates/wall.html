@@ -18,10 +18,20 @@
             <div class="message">
                 <h4>{{m["message"]["poster_name"]}} - {{m["message"]["post_date"]}}</h4>
                 <p>{{m["message"]["message"]}}</p>
+                {% with m_id = m["message"]["message_id"] %}
+                    {% if m["message"]["user_id"] == user_id and m["message"]["post_time"] <= 30 %}
+                        <button onclick="window.location.href='delete_message/{{m_id}}'">Delete</button>
+                    {% endif %}
+                {% endwith %}
                 {% for c in m["comments"] %}
                     <div class="comment">
                         <h4>{{c["poster_name"]}} - {{c["post_date"]}}</h4>
                         <p>{{c["comment"]}}</p>
+                        {% with c_id = c["comment_id"] %}
+                            {% if c["user_id"] == user_id and c["post_time"] <= 30 %}
+                                <button onclick="window.location.href='delete_comment/{{c_id}}'">Delete</button>
+                            {% endif %}
+                        {% endwith %}
                     </div>
                 {% endfor %}
                 <form class="post_c" action="comment" method="POST">
